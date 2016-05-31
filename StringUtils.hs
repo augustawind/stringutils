@@ -15,17 +15,17 @@ wordWrap width str
         notLineBreak = not . (`elem` "\n\r")
         (firstLine, rest) = splitAtWith isWhitespace width str'
 
--- | Split a String at the given width, or at the closest character that
+-- | Split a list at the given width, or at the closest element that
 -- fulfills the given predicate, whichever comes first. Return each
 -- half of the split in a 2-tuple.
-splitAtWith :: (Char -> Bool) -> Int -> String -> (String, String)
-splitAtWith p width str = (first, rest)
+splitAtWith :: (a -> Bool) -> Int -> [a] -> ([a], [a])
+splitAtWith p width xs = (first, rest)
     where 
-        first = case dropWhileEnd (not . p) line of
-                  ""   -> line 
-                  str' -> init str'
-        rest = drop (length first) $ str
-        line = take width str
+        first = case dropWhileEnd (not . p) chunk of
+                  []   -> chunk
+                  ys   -> init ys
+        rest = drop (length first) $ xs
+        chunk = take width xs
 
 -- | Strip leading and trailing whitespace and make everything lowercase.
 normalize :: String -> String
@@ -45,3 +45,9 @@ rstrip = dropWhileEnd isWhitespace
 
 isWhitespace :: Char -> Bool
 isWhitespace = (`elem` [' ', '\t', '\n', '\r'])
+
+takeLast :: Int -> [a] -> [a]
+takeLast n xs = drop (length xs - n) xs
+
+dropLast :: Int -> [a] -> [a]
+dropLast n xs = take (length xs - n) xs
